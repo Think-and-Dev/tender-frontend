@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { WalletConnectArea } from "./connect-wallet";
 import { useLocation } from "react-router-dom";
-import ConnectWallet from "./connect-wallet/connect-wallet";
+import { ClientOnly } from "remix-utils";
+
+import ConnectButton from "./ConnectButton";
+
+// import { WalletConnectArea } from "./connect-wallet";
+// import ConnectWallet from "./connect-wallet/connect-wallet";
 
 const menuLinks = [
   {
@@ -88,7 +92,9 @@ export default function Header() {
             )}
           </div>
           <div className="flex items-center z-20 relative">
-            <WalletConnectArea />
+            <ConnectButton />
+            {/* <WalletConnectArea /> */}
+
             <button
               aria-label="menu"
               className={`flex lg:hidden header__burg ${
@@ -125,7 +131,8 @@ export default function Header() {
                 )}
               </div>
               <div className="mt-[40px] flex justify-center">
-                <ConnectWallet inMenu={true} />
+                <ClientOnly>{() => <ConnectButton />}</ClientOnly>
+                {/* <ConnectWallet inMenu={true} /> */}
               </div>
             </div>
           </div>

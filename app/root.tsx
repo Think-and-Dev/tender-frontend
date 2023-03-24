@@ -1,3 +1,5 @@
+import "@rainbow-me/rainbowkit/styles.css";
+
 import { useEffect } from "react";
 import {
   Links,
@@ -8,7 +10,6 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "remix";
-import { useNetwork } from "wagmi";
 
 import LogRocket from "logrocket";
 import TagManager from "react-gtm-module";
@@ -21,10 +22,12 @@ import globalStyles from "./styles/global.css";
 import Header from "~/components/header-components/Header";
 import Footer from "~/components/Footer";
 
-import { useOnSupportedNetwork } from "~/hooks/use-on-supported-network";
-import { WagmiConfig } from "wagmi";
+// import { useNetwork } from "wagmi";
+// import { useOnSupportedNetwork } from "~/hooks/use-on-supported-network";
 
-import { client as wagmiClient } from "~/connectors/wagmi";
+// import { WagmiConfig } from "wagmi";
+// import { chains, client as wagmiClient } from "~/connectors/wagmi";
+// import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStyles },
@@ -48,38 +51,42 @@ export function loader() {
 export default function App() {
   const data = useLoaderData<typeof loader>();
 
-  const { chain } = useNetwork();
-  const chainId = chain?.id;
+  // const { chain } = useNetwork();
+  // const chainId = chain?.id;
 
-  let onSupportedChain = useOnSupportedNetwork(chainId);
+  // let onSupportedChain = useOnSupportedNetwork(chainId);
 
   useEffect(() => {
     TagManager.initialize({ gtmId: "G-9CFSCBJ73N" });
   }, []);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning={true}>
       <head>
+        <meta charSet="utf-8" />
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,viewport-fit=cover"
+        />
+        <Meta />
+        <Links />
+      </head>
+      <body
+      // className={`${!onSupportedChain ? "switch__to__network" : ""}`}
+      >
         <script
           dangerouslySetInnerHTML={{
             __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
           }}
         />
 
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <Meta />
-        <Links />
-      </head>
-      <body className={`${!onSupportedChain ? "switch__to__network" : ""}`}>
         <div id="m"></div>
-
-        <WagmiConfig client={wagmiClient}>
+        <>
           <Toaster />
           <Header />
           <Outlet />
           <Footer />
-        </WagmiConfig>
+        </>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

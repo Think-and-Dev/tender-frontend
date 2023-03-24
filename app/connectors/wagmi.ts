@@ -3,6 +3,8 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { arbitrum } from "wagmi/chains";
 
+import { getDefaultWallets } from "@rainbow-me/rainbowkit";
+
 import getEnv from "~/utils/getEnv";
 
 const env = getEnv();
@@ -15,8 +17,14 @@ export const { chains, provider, webSocketProvider } = configureChains(
   ]
 );
 
+const { connectors } = getDefaultWallets({
+  appName: "TenderFi",
+  chains,
+});
+
 export const client = createClient({
   autoConnect: true,
+  connectors,
   provider,
   webSocketProvider,
 });

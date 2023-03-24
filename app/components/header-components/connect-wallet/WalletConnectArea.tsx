@@ -1,11 +1,17 @@
+import { ClientOnly } from "remix-utils";
+
 import ConnectWallet from "./connect-wallet";
 import NetworksDropdown from "./networksDropdown";
 
 export const WalletConnectArea = () => {
   return (
-    <>
-      <NetworksDropdown />
-      <ConnectWallet />
-    </>
+    <ClientOnly>
+      {() => (
+        <>
+          <NetworksDropdown />
+          <ConnectWallet />
+        </>
+      )}
+    </ClientOnly>
   );
 };
