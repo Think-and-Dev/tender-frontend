@@ -7,6 +7,8 @@ import WalletDropdown from "./walletDropdown";
 type ConnectWalletProps = {
   inMenu?: boolean;
 } & AuthsType
+// import { ConnectButton } from '@rainbow-me/rainbowkit';
+
 
 export default function ConnectWallet({ inMenu, isDisconnected, connect, disconnect }: ConnectWalletProps) {
   const { address: defaultAddress, isConnected: isActive } = useAccount();
@@ -36,6 +38,7 @@ export default function ConnectWallet({ inMenu, isDisconnected, connect, disconn
 
   return (
     <div>
+      {/* {onClient && <ConnectButton /> }; */}
       {
         onClient && (
           <>
