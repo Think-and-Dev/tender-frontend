@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from "react";
+import { getAPY } from "~/components/shared/APY";
 import { TenderContext } from "~/contexts/tender-context";
 
 export function useAccountSummary() {
@@ -29,7 +30,9 @@ export function useAccountSummary() {
       liquidationThresholdInUsd = m.liquidationThresholdInUsd;
       netGainOrLoss +=
         m.supplyBalanceInUsd * parseFloat(m.marketData.depositApy) * 0.01 -
-        m.borrowBalanceInUsd * parseFloat(m.marketData.borrowApy) * 0.01;
+        m.borrowBalanceInUsd * parseFloat(m.marketData.borrowApy) * 0.01 +
+        m.supplyBalanceInUsd * getAPY("supply", m).ESTNDAPY +
+        m.borrowBalanceInUsd * getAPY("boorrow", m).ESTNDAPY;
     });
 
     const netApy =
