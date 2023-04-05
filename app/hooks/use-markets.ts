@@ -375,9 +375,7 @@ export function useMarkets(
             accountBorrowLimitInUsd
           ),
           maxBorrowLiquidity,
-          hasSufficientAllowance: token.allowance.gte(
-            MINIMUM_REQUIRED_APPROVAL_BALANCE
-          ),
+          tokenAllowance: token.allowance,
           autocompound: token.autocompound,
           performanceFee: token.performanceFee,
           withdrawFee: token.withdrawFee,

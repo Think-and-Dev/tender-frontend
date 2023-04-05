@@ -1,9 +1,7 @@
 /* eslint-disable no-useless-escape */
 import type { Market, TokenPair } from "~/types/global";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import type {
-  TransactionReceipt,
-} from "@ethersproject/providers";
+import type { TransactionReceipt } from "@ethersproject/providers";
 import { getAmount, toMaxString } from "~/lib/ui";
 
 import toast from "react-hot-toast";
@@ -24,6 +22,8 @@ import type { ActiveTab } from "./deposit-borrow-flow";
 import APY from "../shared/APY";
 import { useAccountSummary } from "~/hooks/use-account-summary";
 import { useSigner } from "wagmi";
+import { parseUnits } from "@ethersproject/units";
+import { BigNumber } from "alchemy-sdk";
 
 export interface RepayProps {
   closeModal: Function;
@@ -51,15 +51,16 @@ export default function Repay({
 }: RepayProps) {
   const tokenDecimals = market.tokenPair.token.decimals;
 
-  const [isEnabled, setIsEnabled] = useState<boolean>(
-    market.hasSufficientAllowance
-  );
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
+
   const [isEnabling, setIsEnabling] = useState<boolean>(false);
   const [isRepaying, setIsRepaying] = useState<boolean>(false);
   const { borrowBalanceInUsd } = useAccountSummary();
 
-  let amount = parseFloat(initialValue)
-  let repayValueInUsd = (isNaN(amount) ? 0 : amount * market.tokenPair.token.priceInUsd)
+  let amount = parseFloat(initialValue);
+  let repayValueInUsd = isNaN(amount)
+    ? 0
+    : amount * market.tokenPair.token.priceInUsd;
 
   let borrowCapacity = market.borrowLimit - borrowBalanceInUsd;
   let newBorrowCapacity = borrowCapacity + repayValueInUsd;
@@ -89,15 +90,21 @@ export default function Repay({
     market.tokenPair.token.floor || 0,
     getAmount(maxRepayableAmount, market.tokenPair.token.decimals),
     newBorrowLimitUsed,
-    true,
+    true
   );
 
-  const { currentTransaction, updateTransaction, setIsWaitingToBeMined, networkData } =
-    useContext(TenderContext);
+  const {
+    currentTransaction,
+    updateTransaction,
+    setIsWaitingToBeMined,
+    networkData,
+  } = useContext(TenderContext);
 
   useEffect(() => {
-    setIsEnabled(market.hasSufficientAllowance);
-  }, [market.hasSufficientAllowance]);
+    if (!isNaN(amount)) {
+      setIsEnabled(BigNumber.from(amount).lte(market.tokenAllowance));
+    }
+  }, [amount, market.tokenAllowance]);
 
   useEffect(() => {
     inputEl?.current && inputEl.current.focus();
@@ -254,7 +261,7 @@ export default function Repay({
                 </p>
                 <div className="hidden flex-col absolute items-start bottom-5 group-hover:hidden lg:group-hover:flex group-focus:flex rounded-[10px]">
                   <div className="relative z-10 leading-none whitespace-no-wrap shadow-lg w-[100%] mx-[0px] !rounded-[10px] panel-custom">
-                    <APY market={market} type="supply" />     
+                    <APY market={market} type="supply" />
                   </div>
                   <div className="custom__arrow__tooltip relative top-[-6px] left-5 w-3 h-3 rotate-45 bg-[#181D1B]"></div>
                 </div>
@@ -334,7 +341,11 @@ export default function Repay({
                       updateTransaction(null);
                       toast.success("Repayment successful");
                     } catch (e) {
-                      displayErrorMessage(networkData, e, "Repayment unsuccessful");
+                      displayErrorMessage(
+                        networkData,
+                        e,
+                        "Repayment unsuccessful"
+                      );
                       closeModal();
                     } finally {
                       setIsWaitingToBeMined(false);

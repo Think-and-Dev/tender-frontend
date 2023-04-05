@@ -2,9 +2,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 import { Market, NetworkData } from "~/types/global";
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import type {
-  TransactionReceipt,
-} from "@ethersproject/providers";
+import type { TransactionReceipt } from "@ethersproject/providers";
 import { useValidInputV2 } from "~/hooks/use-valid-input";
 import toast from "react-hot-toast";
 import { useSigner } from "wagmi";
@@ -22,6 +20,8 @@ import type { ActiveTab } from "./deposit-borrow-flow";
 import { formatApy } from "~/lib/apy-calculations";
 import APY from "../shared/APY";
 import { useAccountSummary } from "~/hooks/use-account-summary";
+import { parseUnits } from "@ethersproject/units";
+import { BigNumber } from "alchemy-sdk";
 
 export interface DepositProps {
   closeModal: Function;
@@ -47,9 +47,7 @@ export default function Deposit({
 }: DepositProps) {
   const tokenDecimals = market.tokenPair.token.decimals;
 
-  const [isEnabled, setIsEnabled] = useState<boolean>(
-    market.hasSufficientAllowance
-  );
+  const [isEnabled, setIsEnabled] = useState<boolean>(false);
   const [isEnabling, setIsEnabling] = useState<boolean>(false);
   const [isDepositing, setIsDepositing] = useState<boolean>(false);
   const inputTextClass = shrinkInputClass(initialValue.length);
@@ -60,23 +58,25 @@ export default function Deposit({
     currentTransaction,
     updateTransaction,
     setIsWaitingToBeMined,
-    networkData
+    networkData,
   } = useContext(TenderContext);
 
   const { borrowBalanceInUsd } = useAccountSummary();
-  
+
   const { data: signer } = useSigner();
 
-  let amount = parseFloat(initialValue)
-  let supplyValueInUsd = (isNaN(amount) ? 0 : amount * market.tokenPair.token.priceInUsd)
-  let collateralValue = supplyValueInUsd * market.collateralFactor
+  let amount = parseFloat(initialValue);
+  let supplyValueInUsd = isNaN(amount)
+    ? 0
+    : amount * market.tokenPair.token.priceInUsd;
+  let collateralValue = supplyValueInUsd * market.collateralFactor;
 
   let borrowCapacity = market.borrowLimit - borrowBalanceInUsd;
   let newBorrowCapacity = borrowCapacity + collateralValue;
 
   const newBorrowLimitUsed = useBorrowLimitUsed(
     borrowBalanceInUsd,
-    market.borrowLimit + collateralValue,
+    market.borrowLimit + collateralValue
   );
 
   const [isValid, validationDetail] = useValidInputV2(
@@ -87,8 +87,10 @@ export default function Deposit({
     true
   );
   useEffect(() => {
-    setIsEnabled(market.hasSufficientAllowance);
-  }, [market.hasSufficientAllowance]);
+    if (!isNaN(amount)) {
+      setIsEnabled(BigNumber.from(amount).lte(market.tokenAllowance));
+    }
+  }, [amount, market.tokenAllowance]);
 
   useEffect(() => {
     inputEl?.current && inputEl.current.focus();
@@ -244,7 +246,7 @@ export default function Deposit({
                 <div className="hidden flex-col absolute items-start bottom-5 group-hover:hidden lg:group-hover:flex group-focus:flex rounded-[10px]">
                   <div className="relative z-10 leading-none whitespace-no-wrap shadow-lg w-[100%] mx-[0px] !rounded-[10px] panel-custom">
                     <div className="flex-col w-full h-full bg-[#181D1B] shadow-lg rounded-[10px] pt-[14px] pr-4 pb-[14px] pl-4">
-                      <APY market={market} type="supply" />     
+                      <APY market={market} type="supply" />
                     </div>
                   </div>
                   <div className="custom__arrow__tooltip relative top-[-6px] left-5 w-3 h-3 rotate-45 bg-[#181D1B]"></div>
@@ -325,7 +327,11 @@ export default function Deposit({
                         "Deposit successful"
                       );
                     } catch (e: any) {
-                      displayErrorMessage(networkData, e, "Deposit unsuccessful");
+                      displayErrorMessage(
+                        networkData,
+                        e,
+                        "Deposit unsuccessful"
+                      );
                       closeModal();
                     } finally {
                       setIsWaitingToBeMined(false);

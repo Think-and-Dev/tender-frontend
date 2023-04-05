@@ -109,7 +109,7 @@ export type Market = {
   totalBorrowedAmountInUsd: number;
   comptrollerAddress: string;
   maxBorrowLiquidity: number;
-  hasSufficientAllowance: boolean;
+  tokenAllowance: BigNumber;
   autocompound: boolean;
   performanceFee: number;
   withdrawFee: number;
