@@ -95,10 +95,10 @@ export default function Repay({
     useContext(TenderContext);
 
     useEffect(() => {
-      if (isValid && !isNaN(parseFloat(initialValue))) {
+      if (!isNaN(parseFloat(initialValue))) {
         setIsEnabled(parseUnits(initialValue, tokenDecimals).lte(market.tokenAllowance));
       }
-    }, [initialValue, market.tokenAllowance, isValid]);    
+    }, [initialValue, market.tokenAllowance]);    
 
   useEffect(() => {
     inputEl?.current && inputEl.current.focus();
