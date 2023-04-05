@@ -87,10 +87,10 @@ export default function Deposit({
   );
 
   useEffect(() => {
-    if (isValid) {
+    if (!isNaN(parseFloat(initialValue))) {
       setIsEnabled(parseUnits(initialValue, tokenDecimals).lte(market.tokenAllowance));
     }
-  }, [initialValue, market.tokenAllowance, isValid]);
+  }, [initialValue, market.tokenAllowance]);
 
   useEffect(() => {
     inputEl?.current && inputEl.current.focus();
