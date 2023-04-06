@@ -32,12 +32,61 @@ import { client as WAGMIClient } from "~/connectors/wagmi";
 
 
 import {
-    getDefaultWallets, lightTheme, RainbowKitProvider    
-  } from '@rainbow-me/rainbowkit';
+  connectorsForWallets,
+    lightTheme, RainbowKitProvider    
+} from '@rainbow-me/rainbowkit';
   
 import getEnv from "~/utils/getEnv";
 
+import {
+  injectedWallet,
+  rainbowWallet,
+  walletConnectWallet,
+  metaMaskWallet,
+  ledgerWallet,
+  coinbaseWallet,
+  safeWallet,
+  trustWallet, 
+  zerionWallet
+} from '@rainbow-me/rainbowkit/wallets';
+
+/// WALLET CONFIG
 const env = getEnv();
+
+
+export const { chains, provider, webSocketProvider } = configureChains(
+  [arbitrum],
+  [
+    alchemyProvider({ apiKey: env.ALCHEMY_API_KEY, priority: 0 }),
+    publicProvider({ priority: 1 }),
+  ]
+);
+
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      injectedWallet({ chains }),
+      metaMaskWallet({ chains }),
+      walletConnectWallet({ chains }),
+      ledgerWallet({ chains }),
+      safeWallet({ chains }),
+      trustWallet({ chains }),
+      rainbowWallet({ chains }),
+      zerionWallet({ chains })
+    ],
+  },
+]);
+
+
+///// END
+
+export const wagmiClient = createClient({
+  autoConnect: true,
+  provider,
+  webSocketProvider,
+  connectors
+});
 
 const queryClient = new QueryClient()
 
@@ -48,27 +97,6 @@ export const links: LinksFunction = () => [
 export const meta: MetaFunction = () => {
   return { title: "Tender.fi" };
 };
-
-
-export const { chains, provider, webSocketProvider } = configureChains(
-  [arbitrum],
-  [
-    alchemyProvider({ apiKey: env.ALCHEMY_API_KEY, priority: 0 }),
-    publicProvider({ priority: 1 }),
-  ]
-);
-const { connectors } = getDefaultWallets({
-    appName: 'My RainbowKit App',
-    chains
-  });
-  
-
-export const wagmiClient = createClient({
-  autoConnect: true,
-  provider,
-  webSocketProvider,
-  connectors
-});
 
 
 
