@@ -8,7 +8,6 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import { useNetwork } from "wagmi";
 
 import TagManager from "react-gtm-module";
 
@@ -19,7 +18,7 @@ import globalStyles from "./styles/global.css";
 
 import Header from "~/components/header-components/Header";
 import Footer from "~/components/Footer";
-import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
+import { QueryClient, QueryClientProvider } from 'react-query'
 
 import { useOnSupportedNetwork } from "~/hooks/use-on-supported-network";
 import { WagmiConfig } from "wagmi";
@@ -28,12 +27,10 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { arbitrum } from "wagmi/chains";
 
-import { client as WAGMIClient } from "~/connectors/wagmi";
-
-
 import {
   connectorsForWallets,
-    lightTheme, RainbowKitProvider    
+  darkTheme,
+  RainbowKitProvider    
 } from '@rainbow-me/rainbowkit';
   
 import getEnv from "~/utils/getEnv";
@@ -70,6 +67,7 @@ const connectors = connectorsForWallets([
       metaMaskWallet({ chains }),
       walletConnectWallet({ chains }),
       ledgerWallet({ chains }),
+      coinbaseWallet({ appName: "Tender.fi", chains}),
       safeWallet({ chains }),
       trustWallet({ chains }),
       rainbowWallet({ chains }),
@@ -137,7 +135,7 @@ export default function App() {
 
       <QueryClientProvider client={queryClient}>
     <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider theme={lightTheme()} modalSize="wide"  chains={chains}>
+        <RainbowKitProvider theme={darkTheme()} modalSize="compact"  chains={chains}>
           <Toaster />
           <Header />
           <Outlet />
