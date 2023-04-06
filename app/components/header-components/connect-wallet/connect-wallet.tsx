@@ -1,3 +1,4 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useCallback, useEffect, useState } from "react";
 // import { hooks as Web3Hooks, metaMask } from "~/connectors/meta-mask";
 import { useAccount, useSigner, useSwitchNetwork } from "wagmi";
@@ -8,6 +9,8 @@ type ConnectWalletProps = {
   inMenu?: boolean;
 } & AuthsType
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
+
+// const { openConnectModal } = useConnectModal();
 
 
 export default function ConnectWallet({ inMenu, isDisconnected, connect, disconnect }: ConnectWalletProps) {
@@ -38,7 +41,6 @@ export default function ConnectWallet({ inMenu, isDisconnected, connect, disconn
 
   return (
     <div>
-      {/* {onClient && <ConnectButton /> }; */}
       {
         onClient && (
           <>
@@ -61,7 +63,9 @@ export default function ConnectWallet({ inMenu, isDisconnected, connect, disconn
             )}
           </>
         )
+        
       }
+
     </div>
   );
 }

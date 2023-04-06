@@ -20,15 +20,15 @@ export type AuthsType = ReturnType<typeof useAuth>;
 const useAuth = () => {
   let [isConnecting, setIsConnecting] = useState(false)
 
-  const connector = useConnect({
-    connector: globalThis.WCC
-
-       // connector: new InjectedConnector({chains: [arbitrum]}),
-  });
+  // const connector = useConnect();
+// const connector = useConnect({
+  //      // connector: new InjectedConnector({chains: [arbitrum]}),
+  // });
   // console.log("acquired", Walletconnector)
 
-  const { disconnect: _disconnect } = useDisconnect();
+  // const { disconnect: _disconnect } = useDisconnect();
 
+  let _disconnect = () => {}
   const { connector: activeConnector, address, isConnected } = useAccount()
   const { connect:_connect, connectors, error, isLoading, pendingConnector } = useConnect()
 
@@ -40,9 +40,9 @@ const useAuth = () => {
     }
     try {
       setIsConnecting(true)
-      // await connector.connectAsync();
+      await activeConnector?.connect();
 
-      _connect({ connector })
+      // _connect()
     } catch (err) {
       console.error(err)
     } finally {
@@ -50,7 +50,7 @@ const useAuth = () => {
     }
 
     window.localStorage.setItem(DISCONNECTED_LOCAL_STORAGE_KEY, "0");
-  }, [connector]);
+  }, [_connect]);
 
   const disconnect = useCallback(async () => {
     await _disconnect();

@@ -63,6 +63,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hot-toast": "^2.2.0",
     "react-modal": "^3.14.4",
+    "react-query": "^3.39.3",
     "react-router-dom": "^6.3.0",
     "react-svg-text": "^0.1.2",
     "react-timer-hook": "^3.0.5",

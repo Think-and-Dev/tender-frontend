@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Links,
   LiveReload,
@@ -10,7 +10,6 @@ import {
 } from "remix";
 import { useNetwork } from "wagmi";
 
-import LogRocket from "logrocket";
 import TagManager from "react-gtm-module";
 
 import { Toaster } from "react-hot-toast";
@@ -20,11 +19,27 @@ import globalStyles from "./styles/global.css";
 
 import Header from "~/components/header-components/Header";
 import Footer from "~/components/Footer";
+import { QueryClient, QueryClientProvider, useQuery } from 'react-query'
 
 import { useOnSupportedNetwork } from "~/hooks/use-on-supported-network";
 import { WagmiConfig } from "wagmi";
+import { createClient, configureChains } from "wagmi";
+import { alchemyProvider } from "wagmi/providers/alchemy";
+import { publicProvider } from "wagmi/providers/public";
+import { arbitrum } from "wagmi/chains";
 
-import { client as wagmiClient } from "~/connectors/wagmi";
+import { client as WAGMIClient } from "~/connectors/wagmi";
+
+
+import {
+    getDefaultWallets, RainbowKitProvider    
+  } from '@rainbow-me/rainbowkit';
+  
+import getEnv from "~/utils/getEnv";
+
+const env = getEnv();
+
+const queryClient = new QueryClient()
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStyles },
@@ -34,8 +49,29 @@ export const meta: MetaFunction = () => {
   return { title: "Tender.fi" };
 };
 
-if (process.env.NODE_ENV === "production")
-  LogRocket.init("6bquwn/tender-frontend");
+
+export const { chains, provider, webSocketProvider } = configureChains(
+  [arbitrum],
+  [
+    alchemyProvider({ apiKey: env.ALCHEMY_API_KEY, priority: 0 }),
+    publicProvider({ priority: 1 }),
+  ]
+);
+const { connectors } = getDefaultWallets({
+    appName: 'My RainbowKit App',
+    chains
+  });
+  
+
+export const wagmiClient = createClient({
+  autoConnect: true,
+  provider,
+  webSocketProvider,
+  connectors
+});
+
+
+
 
 export function loader() {
   const env = process.env;
@@ -47,9 +83,7 @@ export function loader() {
 }
 export default function App() {
   const data = useLoaderData<typeof loader>();
-
-  const { chain } = useNetwork();
-  const chainId = chain?.id;
+  const [chainId, setChainId] = useState<number | undefined>(undefined)
 
   let onSupportedChain = useOnSupportedNetwork(chainId);
 
@@ -72,17 +106,22 @@ export default function App() {
         <Links />
       </head>
       <body className={`${!onSupportedChain ? "switch__to__network" : ""}`}>
-        <div id="m"></div>
 
-        <WagmiConfig client={wagmiClient}>
+    <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider chains={chains}>
+      <QueryClientProvider client={queryClient}>
           <Toaster />
           <Header />
           <Outlet />
           <Footer />
-        </WagmiConfig>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+        </QueryClientProvider>
+
+        </RainbowKitProvider>
+
+    </WagmiConfig>
       </body>
     </html>
   );
