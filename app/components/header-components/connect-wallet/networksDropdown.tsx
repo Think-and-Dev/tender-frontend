@@ -3,7 +3,7 @@ import { useAccount, useNetwork, useProvider, useSwitchNetwork } from "wagmi";
 
 import networks from "~/config/networks";
 import type { NetworkData } from "~/types/global";
-import { AuthsType } from "~/hooks/use-auth";
+import { AuthType } from "~/hooks/use-auth";
 export const addNetwork = async (
   provider: any,
   networkData: NetworkData
@@ -64,7 +64,7 @@ const actualNetworks = [
 
 const NetworksDropdown = ({
   connect, isDisconnected
-}: AuthsType ) => {
+}: AuthType ) => {
   const { switchNetwork } = useSwitchNetwork()
 
   const { isConnected: isActive } = useAccount();

@@ -34,6 +34,8 @@ const menuLinks = [
 ];
 
 export default function Header() {
+  // @TODO: This does not work in the last version of remix
+  // location is used to select the menu tiem
   // let location = useLocation();
   const burgerRef = useRef<any>(null);
   const menuRef = useRef<any>(null);

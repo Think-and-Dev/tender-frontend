@@ -1,61 +1,30 @@
-import { arbitrum } from "@wagmi/chains";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { InjectedConnector } from "wagmi/connectors/injected";
-// import { MetaMaskConnector } from "@wagmi/connectors/metaMask";
-
-// import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
-
-
-// let m = import("wagmi/connectors/walletConnect")
+// import { metaMask } from "~/connectors/meta-mask";
 
 const DISCONNECTED_LOCAL_STORAGE_KEY = "tenderWalletDisconnected";
 
-// const isDisconnected = () => {
-//   return window.localStorage.getItem(DISCONNECTED_LOCAL_STORAGE_KEY) === "1";
-// };
-
-export type AuthsType = ReturnType<typeof useAuth>;
+const isDisconnected = () => {
+  return window.localStorage.getItem(DISCONNECTED_LOCAL_STORAGE_KEY) === "1";
+};
 
 const useAuth = () => {
-  let [isConnecting, setIsConnecting] = useState(false)
+  const { address: defaultAddress, isConnected: isActive } = useAccount();
+  const { connect: _connect } = useConnect({
+    connector: new InjectedConnector(),
+  });
+  const { disconnect: _disconnect } = useDisconnect();
 
-  // const connector = useConnect();
-// const connector = useConnect({
-  //      // connector: new InjectedConnector({chains: [arbitrum]}),
-  // });
-  // console.log("acquired", Walletconnector)
-
-  // const { disconnect: _disconnect } = useDisconnect();
-
-  let _disconnect = () => {}
-  const { connector: activeConnector, address, isConnected } = useAccount()
-  const { connect:_connect, connectors, error, isLoading, pendingConnector } = useConnect()
-
-  let isDisconnected = ()=> !isConnected
-  const connect = useCallback(async () => {
-    if (isConnecting) return
-    if (isConnected) {
-      return console.log("already connected", address)
-    }
-    try {
-      setIsConnecting(true)
-      await activeConnector?.connect();
-
-      // _connect()
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setIsConnecting(false)
-    }
-
+  const connect = async () => {
+    await _connect();
     window.localStorage.setItem(DISCONNECTED_LOCAL_STORAGE_KEY, "0");
-  }, [_connect]);
+  };
 
-  const disconnect = useCallback(async () => {
+  const disconnect = async () => {
     await _disconnect();
     window.localStorage.setItem(DISCONNECTED_LOCAL_STORAGE_KEY, "1");
-  }, [_disconnect]);
+  };
 
   useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
@@ -73,9 +42,10 @@ const useAuth = () => {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [connect, disconnect]);
+  }, []);
 
   return { connect, disconnect, isDisconnected };
 };
 
+export type AuthType = ReturnType<typeof useAuth>
 export default useAuth;

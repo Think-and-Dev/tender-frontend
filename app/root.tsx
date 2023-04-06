@@ -12,7 +12,6 @@ import {
 import TagManager from "react-gtm-module";
 
 import { Toaster } from "react-hot-toast";
-import type { MetaFunction, LinksFunction } from "@remix-run/vercel";
 import tailwindStyles from "./tailwind.css";
 import globalStyles from "./styles/global.css";
 
@@ -46,6 +45,7 @@ import {
   trustWallet, 
   zerionWallet
 } from '@rainbow-me/rainbowkit/wallets';
+import { LinksFunction, MetaFunction } from "@remix-run/node";
 
 /// WALLET CONFIG
 const env = getEnv();
@@ -92,11 +92,10 @@ export const links: LinksFunction = () => [
   { rel: "stylesheet", href: tailwindStyles },
   { rel: "stylesheet", href: globalStyles },
 ];
+
 export const meta: MetaFunction = () => {
   return { title: "Tender.fi" };
 };
-
-
 
 
 export function loader() {
@@ -107,11 +106,12 @@ export function loader() {
     },
   };
 }
+
 export default function App() {
   const data = useLoaderData<typeof loader>();
-  const [chainId, setChainId] = useState<number | undefined>(undefined)
 
-  let onSupportedChain = useOnSupportedNetwork(chainId);
+  // @TODO: Make this work
+  let onSupportedChain = useOnSupportedNetwork(undefined);
 
   useEffect(() => {
     TagManager.initialize({ gtmId: "G-9CFSCBJ73N" });
