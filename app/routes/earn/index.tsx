@@ -4,7 +4,7 @@ import { useTenderContext } from "~/hooks/use-tender-context";
 import EmptyEarnContent from "~/components/earn-page/emptyEarnContent";
 import EarnContent from "~/components/earn-page/earnContent";
 import { useEffect, useState } from "react";
-import type { MetaFunction } from "remix";
+import { MetaFunction } from "@remix-run/node";
 
 export default function Earn() {
   const [loading, setLoading] = useState<boolean>(true);

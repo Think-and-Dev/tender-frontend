@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { MetaFunction, useParams } from "remix";
+import { MetaFunction, useParams } from "@remix-run/vercel";
 import { useNetwork } from "wagmi";
 import { useTenderContext } from "~/hooks/use-tender-context";
 import { useOnSupportedNetwork } from "~/hooks/use-on-supported-network";

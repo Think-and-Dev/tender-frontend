@@ -34,7 +34,7 @@ const menuLinks = [
 ];
 
 export default function Header() {
-  let location = useLocation();
+  // let location = useLocation();
   const burgerRef = useRef<any>(null);
   const menuRef = useRef<any>(null);
   const { connect, disconnect, isDisconnected } = useAuth();
@@ -78,7 +78,7 @@ export default function Header() {
                 <a
                   key={item.name}
                   className={`cursor-pointer hover:text-white ${
-                    location.pathname === item.link ? "text-white" : ""
+                  '' // location.pathname === item.link ? "text-white" : ""
                   }`}
                   href={item.link}
                   target={item.target}

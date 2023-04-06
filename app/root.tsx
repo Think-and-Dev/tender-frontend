@@ -7,13 +7,13 @@ import {
   Scripts,
   ScrollRestoration,
   useLoaderData,
-} from "remix";
+} from "@remix-run/react";
 import { useNetwork } from "wagmi";
 
 import TagManager from "react-gtm-module";
 
 import { Toaster } from "react-hot-toast";
-import type { MetaFunction, LinksFunction } from "remix";
+import type { MetaFunction, LinksFunction } from "@remix-run/vercel";
 import tailwindStyles from "./tailwind.css";
 import globalStyles from "./styles/global.css";
 
@@ -32,7 +32,7 @@ import { client as WAGMIClient } from "~/connectors/wagmi";
 
 
 import {
-    getDefaultWallets, RainbowKitProvider    
+    getDefaultWallets, lightTheme, RainbowKitProvider    
   } from '@rainbow-me/rainbowkit';
   
 import getEnv from "~/utils/getEnv";
@@ -107,9 +107,9 @@ export default function App() {
       </head>
       <body className={`${!onSupportedChain ? "switch__to__network" : ""}`}>
 
-    <WagmiConfig client={wagmiClient}>
-        <RainbowKitProvider chains={chains}>
       <QueryClientProvider client={queryClient}>
+    <WagmiConfig client={wagmiClient}>
+        <RainbowKitProvider theme={lightTheme()} modalSize="wide"  chains={chains}>
           <Toaster />
           <Header />
           <Outlet />
@@ -117,11 +117,11 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
-        </QueryClientProvider>
 
         </RainbowKitProvider>
 
     </WagmiConfig>
+    </QueryClientProvider>
       </body>
     </html>
   );
@@ -169,6 +169,9 @@ export function CatchBoundary() {
           </div>
         </div>
         <Footer />
+        <style>
+          
+        </style>
       </body>
     </html>
   );

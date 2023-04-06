@@ -1,4 +1,4 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { ConnectButton, useConnectModal } from "@rainbow-me/rainbowkit";
 import { useCallback, useEffect, useState } from "react";
 // import { hooks as Web3Hooks, metaMask } from "~/connectors/meta-mask";
 import { useAccount, useSigner, useSwitchNetwork } from "wagmi";
@@ -10,7 +10,6 @@ type ConnectWalletProps = {
 } & AuthsType
 // import { ConnectButton } from '@rainbow-me/rainbowkit';
 
-// const { openConnectModal } = useConnectModal();
 
 
 export default function ConnectWallet({ inMenu, isDisconnected, connect, disconnect }: ConnectWalletProps) {
@@ -18,6 +17,7 @@ export default function ConnectWallet({ inMenu, isDisconnected, connect, disconn
   const [onClient, setOnClient] = useState<boolean>(false);
 
   const { data: signer } = useSigner();
+  const { openConnectModal } = useConnectModal();
 
   const handleChainChanged = useCallback((ethereum: any) => {
     ethereum.on("chainChanged", () => {
@@ -53,14 +53,16 @@ export default function ConnectWallet({ inMenu, isDisconnected, connect, disconn
               />
             )}
 
-            {!isActive && (
+<ConnectButton chainStatus="icon" />
+
+            {/* {!isActive && (
               <button
                 className="border font-space flex items-center justify-center font-bold uppercase rounded-md text-dark-green w-[110px] xl:text-sm h-[34px] border-[#14f195] xl:w-[160px] xl:h-[44px] text-[10px] hover:opacity-[0.6]"
-                onClick={() => connect()}
+                onClick={() => openConnectModal && openConnectModal()}
               >
                 Connect Wallet
               </button>
-            )}
+            )} */}
           </>
         )
         
